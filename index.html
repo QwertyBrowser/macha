@@ -1,10 +1,37 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>QwertyBrowser</title>
-  </head>
-  <body style="font-family: system-ui; text-align: center; margin-top: 30vh;">
-    <h1>QwertyBrowser is alive 🚀</h1>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>QwertyBrowser</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #1e1f24; color: #eee; user-select: none; overflow: hidden; }
+    #tabbar { height: 36px; display: flex; align-items: flex-end; padding: 0 8px; }
+    #tabs { display: flex; gap: 2px; }
+    .tab { display: flex; align-items: center; gap: 6px; width: 200px; height: 30px; padding: 0 10px; background: #2a2c33; border-radius: 8px 8px 0 0; font-size: 12px; }
+    .tab.active { background: #3a3d46; }
+    .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .close, #newtab { border: 0; background: none; color: #aaa; cursor: pointer; font-size: 16px; }
+    #newtab { height: 30px; padding: 0 10px; }
+    #toolbar { height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 8px; background: #3a3d46; }
+    #toolbar button { width: 30px; height: 30px; border: 0; border-radius: 15px; background: transparent; color: #eee; font-size: 18px; cursor: pointer; }
+    #toolbar button:hover:not(:disabled) { background: #4a4e59; }
+    #toolbar button:disabled { opacity: 0.3; cursor: default; }
+    #address { flex: 1; height: 30px; border: 0; border-radius: 15px; padding: 0 14px; background: #1e1f24; color: #eee; font-size: 13px; outline: none; user-select: text; }
+  </style>
+</head>
+<body>
+  <div id="tabbar">
+    <div id="tabs"></div>
+    <button id="newtab" title="New tab">+</button>
+  </div>
+  <div id="toolbar">
+    <button id="back" title="Back">‹</button>
+    <button id="forward" title="Forward">›</button>
+    <button id="reload" title="Reload">⟳</button>
+    <input id="address" type="text" placeholder="Search or enter address" spellcheck="false">
+  </div>
+  <script src="renderer.js"></script>
+</body>
 </html>
