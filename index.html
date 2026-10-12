@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
   <title>QwertyBrowser</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, sans-serif; background: #1e1f24; color: #eee; user-select: none; overflow: hidden; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); user-select: none; overflow: hidden; }
     #tabbar { height: 36px; display: flex; align-items: flex-end; padding: 0 8px 0 80px; -webkit-app-region: drag; }
-    #tabs, #newtab { -webkit-app-region: no-drag; }    #tabs { display: flex; gap: 2px; }
-    .tab { display: flex; align-items: center; gap: 6px; width: 200px; height: 30px; padding: 0 10px; background: #2a2c33; border-radius: 8px 8px 0 0; font-size: 12px; }
-    .tab.active { background: #3a3d46; }
+    #tabs, #newtab { -webkit-app-region: no-drag; }
+    #tabs { display: flex; gap: 2px; }
+    .tab { display: flex; align-items: center; gap: 6px; width: 200px; height: 30px; padding: 0 10px; background: var(--tab); border-radius: 8px 8px 0 0; font-size: 12px; }
+    .tab.active { background: var(--tab-active); box-shadow: inset 0 2px 0 var(--accent); }
     .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-    .close, #newtab { border: 0; background: none; color: #aaa; cursor: pointer; font-size: 16px; }
+    .close, #newtab { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; }
     #newtab { height: 30px; padding: 0 10px; }
-    #toolbar { height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 8px; background: #3a3d46; }
-    #toolbar button { width: 30px; height: 30px; border: 0; border-radius: 15px; background: transparent; color: #eee; font-size: 18px; cursor: pointer; }
-    #toolbar button:hover:not(:disabled) { background: #4a4e59; }
+    #toolbar { height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 8px; background: var(--tab-active); }
+    #toolbar button { width: 30px; height: 30px; border: 0; border-radius: 15px; background: transparent; color: var(--text); font-size: 18px; cursor: pointer; }
+    #toolbar button:hover:not(:disabled) { background: var(--hover); }
     #toolbar button:disabled { opacity: 0.3; cursor: default; }
-    #address { flex: 1; height: 30px; border: 0; border-radius: 15px; padding: 0 14px; background: #1e1f24; color: #eee; font-size: 13px; outline: none; user-select: text; }
+    #address { flex: 1; height: 30px; border: 0; border-radius: 15px; padding: 0 14px; background: var(--input); color: var(--text); font-size: 13px; outline: none; user-select: text; }
+    #address:focus { box-shadow: 0 0 0 2px var(--accent); }
   </style>
 </head>
 <body>
@@ -31,6 +34,7 @@
     <button id="forward" title="Forward">›</button>
     <button id="reload" title="Reload">⟳</button>
     <input id="address" type="text" placeholder="Search or enter address" spellcheck="false">
+    <button id="settings" title="Settings">⚙</button>
   </div>
   <script src="renderer.js"></script>
 </body>

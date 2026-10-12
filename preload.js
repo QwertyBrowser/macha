@@ -8,6 +8,8 @@ contextBridge.exposeInMainWorld('browserAPI', {
   back: () => ipcRenderer.send('back'),
   forward: () => ipcRenderer.send('forward'),
   reload: () => ipcRenderer.send('reload'),
+  openSettings: () => ipcRenderer.send('open-settings'),
   onState: (cb) => ipcRenderer.on('state', (_, state) => cb(state)),
-  onFocusAddress: (cb) => ipcRenderer.on('focus-address', () => cb())
+  onFocusAddress: (cb) => ipcRenderer.on('focus-address', () => cb()),
+  onSettings: (cb) => ipcRenderer.on('settings', (_, s) => cb(s))
 });

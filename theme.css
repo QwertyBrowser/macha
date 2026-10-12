@@ -1,0 +1,18 @@
+:root { --accent: #4f8cff; }
+
+html[data-theme="dark"] {
+  --bg: #1e1f24; --tab: #2a2c33; --tab-active: #3a3d46; --input: #1e1f24;
+  --text: #eeeeee; --muted: #aaaaaa; --hover: #4a4e59; color-scheme: dark;
+}
+html[data-theme="light"] {
+  --bg: #dfe2e8; --tab: #cdd1d9; --tab-active: #ffffff; --input: #eef0f3;
+  --text: #1f2328; --muted: #666a73; --hover: #e3e6eb; color-scheme: light;
+}
+html[data-theme="midnight"] {
+  --bg: #0b1020; --tab: #121a33; --tab-active: #1b2547; --input: #0b1020;
+  --text: #e6ecff; --muted: #8a96c0; --hover: #26335e; color-scheme: dark;
+}
+html[data-theme="forest"] {
+  --bg: #0f1a14; --tab: #16251c; --tab-active: #1f3528; --input: #0f1a14;
+  --text: #e6f2ea; --muted: #8fb09c; --hover: #2c4a37; color-scheme: dark;
+}

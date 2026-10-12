@@ -48,3 +48,10 @@ api.onFocusAddress(() => {
   address.focus();
   address.select();
 });
+
+document.getElementById('settings').onclick = () => api.openSettings();
+
+api.onSettings((s) => {
+  document.documentElement.dataset.theme = s.theme;
+  document.documentElement.style.setProperty('--accent', s.accent);
+});
