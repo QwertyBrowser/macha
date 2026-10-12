@@ -97,6 +97,8 @@ function createWindow() {
     width: 1280,
     height: 850,
     title: 'QwertyBrowser',
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 14, y: 12 },
     webPreferences: { preload: path.join(__dirname, 'preload.js') }
   });
   win.loadFile('index.html');

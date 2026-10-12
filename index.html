@@ -7,8 +7,8 @@
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; font-family: system-ui, sans-serif; background: #1e1f24; color: #eee; user-select: none; overflow: hidden; }
-    #tabbar { height: 36px; display: flex; align-items: flex-end; padding: 0 8px; }
-    #tabs { display: flex; gap: 2px; }
+    #tabbar { height: 36px; display: flex; align-items: flex-end; padding: 0 8px 0 80px; -webkit-app-region: drag; }
+    #tabs, #newtab { -webkit-app-region: no-drag; }    #tabs { display: flex; gap: 2px; }
     .tab { display: flex; align-items: center; gap: 6px; width: 200px; height: 30px; padding: 0 10px; background: #2a2c33; border-radius: 8px 8px 0 0; font-size: 12px; }
     .tab.active { background: #3a3d46; }
     .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
