@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: transparent; overflow: hidden; font-family: system-ui, sans-serif; user-select: none; }
+    #list { height: 100vh; padding: 6px; background: var(--tab-active); border: 1px solid var(--hover); border-radius: 14px; color: var(--text); }
+    .row { height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .row.sel { background: var(--hover); }
+    .icon { flex: 0 0 18px; width: 18px; text-align: center; color: var(--muted); }
+    .label { flex: 0 1 auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .sub { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--accent); font-size: 12px; }
+    .sub:not(:empty)::before { content: "— "; }
+  </style>
+</head>
+<body>
+  <div id="list"></div>
+  <script src="suggestions.js"></script>
+</body>
+</html>

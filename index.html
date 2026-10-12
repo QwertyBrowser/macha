@@ -1,21 +1,24 @@
 <!DOCTYPE html>
-<html data-theme="dark">
+<html data-theme="dark" data-tabs="shrink">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:">
   <title>QwertyBrowser</title>
   <link rel="stylesheet" href="theme.css">
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); user-select: none; overflow: hidden; }
     #tabbar { height: 36px; display: flex; align-items: flex-end; padding: 0 8px 0 80px; -webkit-app-region: drag; }
-    #tabs, #newtab { -webkit-app-region: no-drag; }
-    #tabs { display: flex; gap: 2px; }
-    .tab { display: flex; align-items: center; gap: 6px; width: 200px; height: 30px; padding: 0 10px; background: var(--tab); border-radius: 8px 8px 0 0; font-size: 12px; }
+    #tabs { display: flex; gap: 2px; min-width: 0; overflow-x: auto; overflow-y: hidden; -webkit-app-region: no-drag; }
+    #tabs::-webkit-scrollbar { display: none; }
+    .tab { flex: 0 1 200px; min-width: 56px; display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px 0 10px; background: var(--tab); border-radius: 8px 8px 0 0; font-size: 12px; }
+    html[data-tabs="scroll"] .tab { flex: 0 0 200px; }
     .tab.active { background: var(--tab-active); box-shadow: inset 0 2px 0 var(--accent); }
-    .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .fav { width: 16px; height: 16px; flex: 0 0 16px; border-radius: 3px; }
+    .title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
     .close, #newtab { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; }
-    #newtab { height: 30px; padding: 0 10px; }
+    .close { flex: 0 0 auto; }
+    #newtab { flex: 0 0 auto; height: 30px; padding: 0 10px; -webkit-app-region: no-drag; }
     #toolbar { height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 8px; background: var(--tab-active); }
     #toolbar button { width: 30px; height: 30px; border: 0; border-radius: 15px; background: transparent; color: var(--text); font-size: 18px; cursor: pointer; }
     #toolbar button:hover:not(:disabled) { background: var(--hover); }
@@ -33,7 +36,7 @@
     <button id="back" title="Back">‹</button>
     <button id="forward" title="Forward">›</button>
     <button id="reload" title="Reload">⟳</button>
-    <input id="address" type="text" placeholder="Search or enter address" spellcheck="false">
+    <input id="address" type="text" placeholder="Search or enter address" spellcheck="false" autocomplete="off">
     <button id="settings" title="Settings">⚙</button>
   </div>
   <script src="renderer.js"></script>

@@ -1,16 +1,29 @@
 const api = window.settingsAPI;
-const engineSel = document.getElementById('engine');
-const home = document.getElementById('homepage');
-const accent = document.getElementById('accent');
-const themesEl = document.getElementById('themes');
-const status = document.getElementById('status');
+const $ = (id) => document.getElementById(id);
+const engineSel = $('engine');
+const online = $('online');
+const newTab = $('newtab');
+const home = $('homepage');
+const tabsSel = $('taboverflow');
+const accent = $('accent');
+const themesEl = $('themes');
+const status = $('status');
 let statusTimer = null;
+
+function flash(msg) {
+  status.textContent = msg;
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => (status.textContent = ''), 1500);
+}
 
 function apply(s) {
   document.documentElement.dataset.theme = s.theme;
   document.documentElement.style.setProperty('--accent', s.accent);
   engineSel.value = s.searchEngine;
+  online.checked = s.onlineSuggestions;
+  newTab.value = s.newTabMode;
   home.value = s.homepage;
+  tabsSel.value = s.tabOverflow;
   accent.value = s.accent;
   [...themesEl.children].forEach((b) => b.classList.toggle('active', b.dataset.theme === s.theme));
 }
@@ -19,14 +32,18 @@ async function save(patch) {
   const s = await api.set(patch);
   if (!s) return;
   apply(s);
-  status.textContent = 'Saved ✓';
-  clearTimeout(statusTimer);
-  statusTimer = setTimeout(() => (status.textContent = ''), 1500);
+  flash('Saved ✓');
 }
 
 engineSel.onchange = () => save({ searchEngine: engineSel.value });
+online.onchange = () => save({ onlineSuggestions: online.checked });
+newTab.onchange = () => save({ newTabMode: newTab.value });
 home.onchange = () => save({ homepage: home.value });
+tabsSel.onchange = () => save({ tabOverflow: tabsSel.value });
 accent.onchange = () => save({ accent: accent.value });
+$('clear').onclick = async () => {
+  if (await api.clearHistory()) flash('History cleared ✓');
+};
 
 (async () => {
   const data = await api.get();
