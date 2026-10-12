@@ -1,4 +1,4 @@
-const { app, BrowserWindow, WebContentsView, ipcMain } = require('electron');
+const { app, BrowserWindow, WebContentsView, ipcMain, Menu } = require('electron');
 const path = require('path');
 
 const TOOLBAR_HEIGHT = 80;
@@ -57,6 +57,12 @@ function switchTab(id) {
   sendState();
 }
 
+function nextTab(delta) {
+  if (tabs.length < 2) return;
+  const i = tabs.findIndex((t) => t.id === activeId);
+  switchTab(tabs[(i + delta + tabs.length) % tabs.length].id);
+}
+
 function createTab(url = HOME) {
   const view = new WebContentsView({
     webPreferences: { sandbox: true, contextIsolation: true }
@@ -90,6 +96,66 @@ function closeTab(id) {
   } else {
     sendState();
   }
+}
+
+function buildMenu() {
+  const template = [
+    { role: 'appMenu' },
+    {
+      label: 'File',
+      submenu: [
+        { label: 'New Tab', accelerator: 'CmdOrCtrl+T', click: () => win && createTab() },
+        { label: 'Close Tab', accelerator: 'CmdOrCtrl+W', click: () => win && activeId && closeTab(activeId) },
+        { type: 'separator' },
+        {
+          label: 'Open Location',
+          accelerator: 'CmdOrCtrl+L',
+          click: () => {
+            if (!win) return;
+            win.webContents.focus();
+            win.webContents.send('focus-address');
+          }
+        }
+      ]
+    },
+    { role: 'editMenu' },
+    {
+      label: 'View',
+      submenu: [
+        { label: 'Reload Page', accelerator: 'CmdOrCtrl+R', click: () => activeTab()?.view.webContents.reload() },
+        { label: 'Hard Reload', accelerator: 'CmdOrCtrl+Shift+R', click: () => activeTab()?.view.webContents.reloadIgnoringCache() },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+    {
+      label: 'History',
+      submenu: [
+        { label: 'Back', accelerator: 'CmdOrCtrl+[', click: () => activeTab()?.view.webContents.navigationHistory.goBack() },
+        { label: 'Forward', accelerator: 'CmdOrCtrl+]', click: () => activeTab()?.view.webContents.navigationHistory.goForward() }
+      ]
+    },
+    {
+      label: 'Tabs',
+      submenu: [
+        { label: 'Next Tab', accelerator: 'Ctrl+Tab', click: () => nextTab(1) },
+        { label: 'Previous Tab', accelerator: 'Ctrl+Shift+Tab', click: () => nextTab(-1) },
+        { type: 'separator' },
+        ...Array.from({ length: 8 }, (_, n) => ({
+          label: `Tab ${n + 1}`,
+          accelerator: `CmdOrCtrl+${n + 1}`,
+          click: () => tabs[n] && switchTab(tabs[n].id)
+        })),
+        {
+          label: 'Last Tab',
+          accelerator: 'CmdOrCtrl+9',
+          click: () => tabs.length && switchTab(tabs[tabs.length - 1].id)
+        }
+      ]
+    },
+    { role: 'windowMenu' }
+  ];
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
 function createWindow() {
@@ -135,6 +201,7 @@ ipcMain.on('reload', () => {
 });
 
 app.whenReady().then(() => {
+  buildMenu();
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

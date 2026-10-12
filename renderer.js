@@ -43,3 +43,8 @@ api.onState((state) => {
   forwardBtn.disabled = !state.canGoForward;
   if (document.activeElement !== address) address.value = state.url || '';
 });
+
+api.onFocusAddress(() => {
+  address.focus();
+  address.select();
+});
