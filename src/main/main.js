@@ -1,9 +1,9 @@
 const { app, BrowserWindow } = require('electron');
-const { loadSettings } = require('./main/settings-store');
-const { loadStore, flushStore } = require('./main/history');
-const { buildMenu } = require('./main/menu');
-const { createWindow } = require('./main/window');
-const { registerIpc } = require('./main/ipc');
+const { loadSettings } = require('./settings-store');
+const { loadStore, flushStore } = require('./history');
+const { buildMenu } = require('./menu');
+const { createWindow } = require('./window');
+const { registerIpc } = require('./ipc');
 
 registerIpc();
 

@@ -1,6 +1,6 @@
 const { BrowserWindow, WebContentsView } = require('electron');
 const path = require('path');
-const { ROOT } = require('./constants');
+const { PRELOAD_DIR, UI_DIR } = require('./constants');
 const state = require('./state');
 const { sendSettings } = require('./settings-store');
 const { hideSuggestions } = require('./overlay');
@@ -13,21 +13,21 @@ function createWindow() {
     title: 'QwertyBrowser',
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 14, y: 12 },
-    webPreferences: { preload: path.join(ROOT, 'preload.js') }
+    webPreferences: { preload: path.join(PRELOAD_DIR, 'toolbar.js') }
   });
   state.win = win;
 
   // the floating dropdown for address bar predictions
   const suggestView = new WebContentsView({
-    webPreferences: { sandbox: true, contextIsolation: true, preload: path.join(ROOT, 'suggest-preload.js') }
+    webPreferences: { sandbox: true, contextIsolation: true, preload: path.join(PRELOAD_DIR, 'suggestions.js') }
   });
   state.suggestView = suggestView;
   suggestView.setBackgroundColor('#00000000');
-  suggestView.webContents.loadFile(path.join(ROOT, 'suggestions.html'));
+  suggestView.webContents.loadFile(path.join(UI_DIR, 'suggestions', 'suggestions.html'));
   suggestView.webContents.on('will-navigate', (e) => e.preventDefault());
   suggestView.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
 
-  win.loadFile(path.join(ROOT, 'index.html'));
+  win.loadFile(path.join(UI_DIR, 'toolbar', 'index.html'));
   win.webContents.on('did-finish-load', () => {
     sendSettings();
     if (state.tabs.length === 0) createTab();

@@ -1,7 +1,9 @@
 const path = require('path');
 
-// Project folder (one level up from main/): index.html, preload files, etc. live there
-const ROOT = path.join(__dirname, '..');
+// src/ folder (one level up from src/main/)
+const SRC = path.join(__dirname, '..');
+const PRELOAD_DIR = path.join(SRC, 'preload');
+const UI_DIR = path.join(SRC, 'ui');
 
 const TOOLBAR_HEIGHT = 80;
 const ROW_HEIGHT = 36;
@@ -40,7 +42,8 @@ const DEFAULTS = {
 const INTERNAL = { 'qwerty://newtab': 'newtab', 'qwerty://settings': 'settings' };
 
 module.exports = {
-  ROOT,
+  PRELOAD_DIR,
+  UI_DIR,
   TOOLBAR_HEIGHT,
   ROW_HEIGHT,
   OVERLAY_PAD,

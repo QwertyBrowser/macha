@@ -1,5 +1,5 @@
 const path = require('path');
-const { ROOT, TOOLBAR_HEIGHT, ENGINES, INTERNAL } = require('./constants');
+const { PRELOAD_DIR, UI_DIR, TOOLBAR_HEIGHT, ENGINES, INTERNAL } = require('./constants');
 const state = require('./state');
 const { recordVisit, setTitle } = require('./history');
 const { hideSuggestions } = require('./overlay');
@@ -93,12 +93,12 @@ function nextTab(delta) {
 }
 
 function buildView(tab, kind, url) {
-  const preload = { settings: 'settings-preload.js', newtab: 'newtab-preload.js' }[kind];
+  const preload = { settings: 'settings.js', newtab: 'newtab.js' }[kind];
   const view = new (require('electron').WebContentsView)({
     webPreferences: {
       sandbox: true,
       contextIsolation: true,
-      ...(preload ? { preload: path.join(ROOT, preload) } : {})
+      ...(preload ? { preload: path.join(PRELOAD_DIR, preload) } : {})
     }
   });
   const wc = view.webContents;
@@ -144,7 +144,7 @@ function buildView(tab, kind, url) {
   } else {
     // internal pages have special powers, so they must never navigate to the web
     wc.on('will-navigate', (e) => e.preventDefault());
-    wc.loadFile(path.join(ROOT, kind === 'settings' ? 'settings.html' : 'newtab.html'));
+    wc.loadFile(path.join(UI_DIR, kind === 'settings' ? 'settings/settings.html' : 'newtab/newtab.html'));
   }
 }
 
