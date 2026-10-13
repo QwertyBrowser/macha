@@ -10,7 +10,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 850,
-    title: 'QwertyBrowser',
+    title: 'Macha',
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 14, y: 12 },
     webPreferences: { preload: path.join(PRELOAD_DIR, 'toolbar.js') }

@@ -3,7 +3,7 @@ const input = document.getElementById('q');
 let engines = {};
 
 function apply(s) {
-  applyTheme(s.theme, s.accentOverride);
+  applyTheme(s);
   input.placeholder = 'Search with ' + (engines[s.searchEngine] || 'your search engine');
 }
 

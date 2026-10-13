@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="blue-dark">
+<html data-theme="mint-light" data-font="nunito">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
@@ -7,7 +7,7 @@
   <script src="../shared/theme.js"></script>
   <style>
     * { box-sizing: border-box; }
-    html, body { margin: 0; background: transparent; overflow: hidden; font-family: system-ui, sans-serif; user-select: none; }
+    html, body { margin: 0; background: transparent; overflow: hidden; font-family: var(--font); user-select: none; }
     #list { height: 100vh; padding: 6px; background: var(--tab-active); border: 1px solid var(--hover); border-radius: 14px; color: var(--text); }
     .row { height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-radius: 8px; cursor: pointer; font-size: 13px; }
     .row.sel { background: var(--hover); }

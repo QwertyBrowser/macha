@@ -26,20 +26,26 @@ const SUGGEST_URLS = {
   ecosia: (q) => `https://ac.ecosia.org/autocomplete?type=list&q=${q}`
 };
 
-const THEME_COLORS = ['red', 'blue', 'green', 'yellow', 'violet', 'orange', 'pink', 'indigo'];
+const THEME_COLORS = ['red', 'blue', 'green', 'mint', 'yellow', 'violet', 'orange', 'pink', 'indigo'];
 const THEMES = [...THEME_COLORS.flatMap((c) => [`${c}-dark`, `${c}-light`]), 'black', 'white'];
 // themes saved by older versions map onto the closest new one
 const LEGACY_THEMES = { dark: 'blue-dark', light: 'blue-light', midnight: 'indigo-dark', forest: 'green-dark' };
 
-const DEFAULTS = {
+// bundled interface fonts (the files live in src/ui/shared/fonts/)
+const FONTS = { nunito: 'Nunito', inter: 'Inter', 'dm-sans': 'DM Sans', system: 'System default' };
+
+// Known-good settings. Your own defaults live in defaults.js and are checked against these.
+const FALLBACK = {
   searchEngine: 'duckduckgo',
   homepage: 'https://duckduckgo.com/',
   theme: 'blue-dark',
   accentOverride: null, // null = use the theme's own accent color
+  font: 'system',
   tabOverflow: 'shrink',
   newTabMode: 'newtab',
   onlineSuggestions: true,
-  lastTabClose: 'replace'
+  lastTabClose: 'replace',
+  setupComplete: false
 };
 
 const INTERNAL = { 'qwerty://newtab': 'newtab', 'qwerty://settings': 'settings' };
@@ -55,6 +61,7 @@ module.exports = {
   SUGGEST_URLS,
   THEMES,
   LEGACY_THEMES,
-  DEFAULTS,
+  FONTS,
+  FALLBACK,
   INTERNAL
 };

@@ -6,6 +6,8 @@ const newTab = $('newtab');
 const home = $('homepage');
 const tabsSel = $('taboverflow');
 const lastTab = $('lasttab');
+const fontSel = $('font');
+const resetBtn = $('reset');
 const accent = $('accent');
 const accentReset = $('accent-reset');
 const accentHint = $('accent-hint');
@@ -36,13 +38,14 @@ function flash(msg) {
 }
 
 function apply(s) {
-  applyTheme(s.theme, s.accentOverride);
+  applyTheme(s);
   engineSel.value = s.searchEngine;
   online.checked = s.onlineSuggestions;
   newTab.value = s.newTabMode;
   home.value = s.homepage;
   tabsSel.value = s.tabOverflow;
   lastTab.value = s.lastTabClose;
+  fontSel.value = s.font;
   themesEl.querySelectorAll('.swatch').forEach((b) => b.classList.toggle('active', b.dataset.id === s.theme));
   accent.value = s.accentOverride || toHex(getComputedStyle(document.documentElement).getPropertyValue('--accent'));
   accentReset.disabled = !s.accentOverride;
@@ -84,6 +87,31 @@ newTab.onchange = () => save({ newTabMode: newTab.value });
 home.onchange = () => save({ homepage: home.value });
 tabsSel.onchange = () => save({ tabOverflow: tabsSel.value });
 lastTab.onchange = () => save({ lastTabClose: lastTab.value });
+fontSel.onchange = () => save({ font: fontSel.value });
+
+let resetArmed = false;
+let resetTimer = null;
+function disarmReset() {
+  resetArmed = false;
+  clearTimeout(resetTimer);
+  resetBtn.classList.remove('armed');
+  resetBtn.textContent = 'Reset Macha to factory settings…';
+}
+resetBtn.onclick = async () => {
+  if (!resetArmed) {
+    resetArmed = true;
+    resetBtn.classList.add('armed');
+    resetBtn.textContent = 'Click again to confirm';
+    resetTimer = setTimeout(disarmReset, 4000);
+    return;
+  }
+  disarmReset();
+  const s = await api.reset();
+  if (s) {
+    apply(s);
+    flash('Reset to factory settings ✓');
+  }
+};
 accent.onchange = () => save({ accentOverride: accent.value });
 accentReset.onclick = () => save({ accentOverride: null });
 $('clear').onclick = async () => {
@@ -98,6 +126,12 @@ $('clear').onclick = async () => {
     o.value = id;
     o.textContent = name;
     engineSel.appendChild(o);
+  });
+  Object.entries(data.fonts).forEach(([id, name]) => {
+    const o = document.createElement('option');
+    o.value = id;
+    o.textContent = name;
+    fontSel.appendChild(o);
   });
   buildThemes(data.themes);
   apply(data.settings);

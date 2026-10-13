@@ -1,7 +1,7 @@
 const { ipcMain } = require('electron');
-const { ENGINE_NAMES, THEMES } = require('./constants');
+const { ENGINE_NAMES, THEMES, FONTS } = require('./constants');
 const state = require('./state');
-const { sanitize, saveSettings, sendSettings } = require('./settings-store');
+const { sanitize, saveSettings, sendSettings, resetSettings } = require('./settings-store');
 const { clearStore, recordSearch } = require('./history');
 const { searchURL, looksLikeURL, resolveInput } = require('./input');
 const { localSuggestions, onlineSuggestions, withOnline } = require('./predictions');
@@ -28,7 +28,7 @@ function registerIpc() {
   ipcMain.handle('settings:get', (e) => {
     const t = tabOf(e);
     if (!t || t.kind !== 'settings') return null;
-    return { settings: state.settings, engines: ENGINE_NAMES, themes: THEMES };
+    return { settings: state.settings, engines: ENGINE_NAMES, themes: THEMES, fonts: FONTS };
   });
 
   ipcMain.handle('settings:set', (e, patch) => {
@@ -37,6 +37,15 @@ function registerIpc() {
     state.settings = sanitize(patch, state.settings);
     saveSettings();
     sendSettings();
+    return state.settings;
+  });
+
+  ipcMain.handle('settings:reset', (e) => {
+    const t = tabOf(e);
+    if (!t || t.kind !== 'settings') return null;
+    resetSettings();
+    clearStore();
+    state.closedTabs = [];
     return state.settings;
   });
 

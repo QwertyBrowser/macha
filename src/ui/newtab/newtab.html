@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="blue-dark">
+<html data-theme="mint-light" data-font="nunito">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
@@ -8,7 +8,7 @@
   <script src="../shared/theme.js"></script>
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; font-family: system-ui, sans-serif; background: var(--tab-active); color: var(--text); }
+    body { margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; font-family: var(--font); background: var(--tab-active); color: var(--text); }
     h1 { margin: 0; font-size: 44px; letter-spacing: -1px; }
     h1 span { color: var(--accent); }
     form { width: min(560px, 86vw); }
@@ -17,7 +17,7 @@
   </style>
 </head>
 <body>
-  <h1>Qwerty<span>Browser</span></h1>
+  <h1><span>Macha</span></h1>
   <form id="f">
     <input id="q" type="text" placeholder="Search" spellcheck="false" autocomplete="off">
   </form>

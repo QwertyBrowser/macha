@@ -1,7 +1,9 @@
-// Applies a theme to the current page. accentOverride is a hex color or null (= use the theme's accent).
-function applyTheme(theme, accentOverride) {
+// Applies the look of the app to the current page.
+// s = { theme, accentOverride (hex or null), font }
+function applyTheme(s) {
   const root = document.documentElement;
-  root.dataset.theme = theme;
-  if (accentOverride) root.style.setProperty('--accent', accentOverride);
+  root.dataset.theme = s.theme;
+  root.dataset.font = s.font || 'system';
+  if (s.accentOverride) root.style.setProperty('--accent', s.accentOverride);
   else root.style.removeProperty('--accent');
 }

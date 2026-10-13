@@ -5,6 +5,7 @@
 [data-theme^="red-"]    { --h: 355; --ad: 62%; --al: 45%; }
 [data-theme^="blue-"]   { --h: 215; --ad: 64%; --al: 46%; }
 [data-theme^="green-"]  { --h: 140; --ad: 48%; --al: 32%; }
+[data-theme^="mint-"]   { --h: 160; --ad: 50%; --al: 32%; }
 [data-theme^="yellow-"] { --h: 46;  --ad: 54%; --al: 36%; }
 [data-theme^="violet-"] { --h: 272; --ad: 70%; --al: 52%; }
 [data-theme^="orange-"] { --h: 25;  --ad: 55%; --al: 42%; }
@@ -46,3 +47,15 @@
   --text: #111111; --muted: #666666; --hover: #ececec; --accent: #1a1a1a;
   color-scheme: light;
 }
+
+/* ---- interface fonts (bundled, open-source; files in fonts/) ---- */
+@font-face { font-family: 'Nunito'; src: url('fonts/nunito.woff2') format('woff2'); font-weight: 200 1000; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('fonts/inter.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'DM Sans'; src: url('fonts/dm-sans.woff2') format('woff2'); font-weight: 100 1000; font-display: swap; }
+
+:root { --font: system-ui, sans-serif; }
+[data-font="nunito"] { --font: 'Nunito', system-ui, sans-serif; }
+[data-font="inter"] { --font: 'Inter', system-ui, sans-serif; }
+[data-font="dm-sans"] { --font: 'DM Sans', system-ui, sans-serif; }
+
+button, input, select, textarea { font-family: inherit; }

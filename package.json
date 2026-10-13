@@ -1,5 +1,5 @@
 {
-  "name": "qwertybrowser",
+  "name": "macha",
   "version": "1.0.0",
   "description": "",
   "main": "src/main/main.js",
@@ -9,17 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/QwertyBrowser/qwertybrowser.git"
+    "url": "git+https://github.com/QwertyBrowser/macha.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/QwertyBrowser/qwertybrowser/issues"
+    "url": "https://github.com/QwertyBrowser/macha/issues"
   },
-  "homepage": "https://github.com/QwertyBrowser/qwertybrowser#readme",
+  "homepage": "https://github.com/QwertyBrowser/macha#readme",
   "devDependencies": {
     "electron": "^44.7.0"
-  }
+  },
+  "productName": "Macha"
 }

@@ -254,6 +254,6 @@ api.onFocusAddress((opts) => {
 api.onBlurAddress(() => address.blur());
 
 api.onSettings((s) => {
-  applyTheme(s.theme, s.accentOverride);
+  applyTheme(s);
   document.documentElement.dataset.tabs = s.tabOverflow;
 });
