@@ -3,7 +3,7 @@ Meet the all-in-one personal, customizable browser you can edit for your needs
 ## How to setup
 **Start using your new Macha browser the best way by this guide**
 ### 1. Set up your browser theme
-**We like Macha mint, but you can choose a total of 11 themes, colors of both dark and light mode, or plain white or black**
+**We like Macha mint, but you can choose a total of 11 themes, colors of both dark and light mode, or plain white or black**<br>
 ![List of Macha themes](image.png)
 ### 2. Setup your search engine
 **You can choose from Google, Bing, Brave, Ecosia, or DuckDuckGo**
