@@ -29,7 +29,8 @@ const DEFAULTS = {
   accent: '#4f8cff',
   tabOverflow: 'shrink',
   newTabMode: 'newtab',
-  onlineSuggestions: true
+  onlineSuggestions: true,
+  lastTabClose: 'replace'
 };
 const INTERNAL = { 'qwerty://newtab': 'newtab', 'qwerty://settings': 'settings' };
 
@@ -44,6 +45,7 @@ let nextId = 1;
 let suggestSeq = 0;
 let currentItems = [];
 let saveTimer = null;
+let closedTabs = [];
 
 /* ---------- settings ---------- */
 
@@ -67,6 +69,7 @@ function sanitize(input, base) {
   if (typeof input.accent === 'string' && /^#[0-9a-f]{6}$/i.test(input.accent)) out.accent = input.accent;
   if (['shrink', 'scroll'].includes(input.tabOverflow)) out.tabOverflow = input.tabOverflow;
   if (['newtab', 'homepage'].includes(input.newTabMode)) out.newTabMode = input.newTabMode;
+  if (['replace', 'closeWindow'].includes(input.lastTabClose)) out.lastTabClose = input.lastTabClose;
   if (typeof input.onlineSuggestions === 'boolean') out.onlineSuggestions = input.onlineSuggestions;
   if (typeof input.homepage === 'string') {
     const home = normalizeHomepage(input.homepage);
@@ -325,10 +328,26 @@ function layout() {
   tab.view.setBounds({ x: 0, y: TOOLBAR_HEIGHT, width, height: height - TOOLBAR_HEIGHT });
 }
 
+// if the page is a results page from one of our search engines, return just the query
+function searchQueryFromURL(raw) {
+  try {
+    const u = new URL(raw);
+    for (const e of Object.values(ENGINES)) {
+      const base = new URL(e.url);
+      if (u.hostname === base.hostname && u.pathname === base.pathname) {
+        const q = u.searchParams.get('q');
+        if (q && q.trim()) return q;
+      }
+    }
+  } catch {}
+  return null;
+}
+
 function pageURL(tab) {
   if (tab.kind === 'newtab') return '';
   if (tab.kind === 'settings') return 'qwerty://settings';
-  return tab.view.webContents.getURL();
+  const url = tab.view.webContents.getURL();
+  return searchQueryFromURL(url) ?? url;
 }
 
 function tabTitle(tab) {
@@ -490,14 +509,42 @@ function openSettings() {
   else createTab({ kind: 'settings' });
 }
 
+function rememberClosed(tab) {
+  if (tab.view.webContents.isDestroyed()) return;
+  if (tab.kind === 'settings') {
+    closedTabs.push({ kind: 'settings' });
+  } else if (tab.kind === 'web') {
+    const url = tab.view.webContents.getURL();
+    if (/^https?:/i.test(url)) closedTabs.push({ kind: 'web', url });
+  }
+  if (closedTabs.length > 25) closedTabs.shift();
+}
+
+function reopenClosedTab() {
+  if (!win) return;
+  let entry;
+  while ((entry = closedTabs.pop())) {
+    // skip a stale Settings entry if Settings is already open
+    if (entry.kind === 'settings' && tabs.some((t) => t.kind === 'settings')) continue;
+    break;
+  }
+  if (!entry) return;
+  if (entry.kind === 'settings') return openSettings();
+  const only = tabs.length === 1 ? tabs[0] : null;
+  if (only && only.kind === 'newtab') navigateTab(only, entry.url); // reuse the blank tab
+  else createTab({ url: entry.url });
+}
+
 function closeTab(id) {
   const i = tabs.findIndex((t) => t.id === id);
   if (i === -1) return;
   const [tab] = tabs.splice(i, 1);
+  rememberClosed(tab);
   if (id === activeId) win.contentView.removeChildView(tab.view);
   tab.view.webContents.close();
   if (tabs.length === 0) {
-    createTab();
+    if (settings.lastTabClose === 'closeWindow') win.close();
+    else createTab();
   } else if (activeId === id) {
     switchTab(tabs[Math.max(0, i - 1)].id);
   } else {
@@ -530,7 +577,7 @@ function buildMenu() {
       submenu: [
         { label: 'New Tab', accelerator: 'CmdOrCtrl+T', click: () => win && createTab() },
         { label: 'Close Tab', accelerator: 'CmdOrCtrl+W', click: () => win && activeId && closeTab(activeId) },
-        { type: 'separator' },
+        { label: 'Reopen Closed Tab', accelerator: 'CmdOrCtrl+Shift+T', click: reopenClosedTab },        { type: 'separator' },
         { label: 'Open Location', accelerator: 'CmdOrCtrl+L', click: () => focusAddress() }
       ]
     },

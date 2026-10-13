@@ -5,6 +5,7 @@ const online = $('online');
 const newTab = $('newtab');
 const home = $('homepage');
 const tabsSel = $('taboverflow');
+const lastTab = $('lasttab');
 const accent = $('accent');
 const themesEl = $('themes');
 const status = $('status');
@@ -24,6 +25,7 @@ function apply(s) {
   newTab.value = s.newTabMode;
   home.value = s.homepage;
   tabsSel.value = s.tabOverflow;
+  lastTab.value = s.lastTabClose;
   accent.value = s.accent;
   [...themesEl.children].forEach((b) => b.classList.toggle('active', b.dataset.theme === s.theme));
 }
@@ -40,6 +42,7 @@ online.onchange = () => save({ onlineSuggestions: online.checked });
 newTab.onchange = () => save({ newTabMode: newTab.value });
 home.onchange = () => save({ homepage: home.value });
 tabsSel.onchange = () => save({ tabOverflow: tabsSel.value });
+lastTab.onchange = () => save({ lastTabClose: lastTab.value });
 accent.onchange = () => save({ accent: accent.value });
 $('clear').onclick = async () => {
   if (await api.clearHistory()) flash('History cleared ✓');

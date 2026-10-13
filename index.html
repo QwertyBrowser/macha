@@ -11,8 +11,10 @@
     #tabbar { height: 36px; display: flex; align-items: flex-end; padding: 0 8px 0 80px; -webkit-app-region: drag; }
     #tabs { display: flex; gap: 2px; min-width: 0; overflow-x: auto; overflow-y: hidden; -webkit-app-region: no-drag; }
     #tabs::-webkit-scrollbar { display: none; }
-    .tab { flex: 0 1 200px; min-width: 56px; display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px 0 10px; background: var(--tab); border-radius: 8px 8px 0 0; font-size: 12px; }
-    html[data-tabs="scroll"] .tab { flex: 0 0 200px; }
+    .tab { flex: 0 1 200px; min-width: 56px; max-width: 200px; overflow: hidden; display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px 0 10px; background: var(--tab); border-radius: 8px 8px 0 0; font-size: 12px; transition: max-width .18s ease, min-width .18s ease, padding .18s ease, margin-right .18s ease, opacity .18s ease, transform .18s ease; }
+    .tab.enter, .tab.leaving { min-width: 0; max-width: 0; padding-left: 0; padding-right: 0; margin-right: -2px; opacity: 0; transform: translateX(-14px); }
+    .tab.leaving { pointer-events: none; }
+    @media (prefers-reduced-motion: reduce) { .tab { transition: none; } }    html[data-tabs="scroll"] .tab { flex: 0 0 200px; }
     .tab.active { background: var(--tab-active); box-shadow: inset 0 2px 0 var(--accent); }
     .fav { width: 16px; height: 16px; flex: 0 0 16px; border-radius: 3px; }
     .title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }

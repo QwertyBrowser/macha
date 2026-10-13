@@ -44,6 +44,7 @@ address.addEventListener('input', () => {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(requestSuggestions, 60);
 });
+
 let selectOnMouseUp = false;
 let suppressSelect = false;
 let regained = false;
@@ -77,6 +78,7 @@ address.addEventListener('focus', () => {
   }
   address.select(); // keyboard focus, e.g. Tab
 });
+
 address.addEventListener('blur', () => {
   blurTimer = setTimeout(closeSuggestions, 150);
 });
@@ -114,6 +116,9 @@ api.onSuggestItems((msg) => {
 
 /* ---------- tabs + state ---------- */
 
+const ANIM_MS = 180;
+const tabEls = new Map(); // tab id -> { el, titleEl, img, favicon }
+let firstRender = true;
 let lastActiveId = null;
 let lastTabCount = 0;
 
@@ -128,51 +133,104 @@ tabsEl.addEventListener(
   { passive: false }
 );
 
-api.onState((state) => {
-  const prevScroll = tabsEl.scrollLeft;
-  const els = state.tabs.map((t) => {
-    const tab = document.createElement('div');
-    tab.className = 'tab' + (t.active ? ' active' : '');
-    tab.title = t.title;
-    tab.onclick = () => api.switchTab(t.id);
-    tab.onauxclick = (e) => {
-      if (e.button === 1) api.closeTab(t.id);
-    };
+function makeTab(t) {
+  const el = document.createElement('div');
+  el.className = 'tab';
+  el.onclick = () => api.switchTab(t.id);
+  el.onauxclick = (e) => {
+    if (e.button === 1) api.closeTab(t.id);
+  };
 
-    if (t.favicon) {
+  const titleEl = document.createElement('span');
+  titleEl.className = 'title';
+
+  const close = document.createElement('button');
+  close.className = 'close';
+  close.textContent = '×';
+  close.onclick = (e) => {
+    e.stopPropagation();
+    api.closeTab(t.id);
+  };
+
+  el.append(titleEl, close);
+  return { el, titleEl, img: null, favicon: null };
+}
+
+function updateTab(entry, t) {
+  const { el, titleEl } = entry;
+  el.classList.toggle('active', t.active);
+  el.title = t.title;
+  if (titleEl.textContent !== t.title) titleEl.textContent = t.title;
+
+  const favicon = t.favicon || null;
+  if (entry.favicon !== favicon) {
+    entry.favicon = favicon;
+    if (entry.img) {
+      entry.img.remove();
+      entry.img = null;
+    }
+    if (favicon) {
       const img = new Image();
       img.className = 'fav';
       img.draggable = false;
-      img.onerror = () => img.remove();
-      img.src = t.favicon;
-      tab.appendChild(img);
+      img.onerror = () => {
+        img.remove();
+        if (entry.img === img) entry.img = null;
+      };
+      img.src = favicon;
+      el.insertBefore(img, titleEl);
+      entry.img = img;
     }
+  }
+}
 
-    const title = document.createElement('span');
-    title.className = 'title';
-    title.textContent = t.title;
+function scrollActiveIntoView() {
+  const el = tabsEl.querySelector('.tab.active:not(.leaving)');
+  if (el) el.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+}
 
-    const close = document.createElement('button');
-    close.className = 'close';
-    close.textContent = '×';
-    close.onclick = (e) => {
-      e.stopPropagation();
-      api.closeTab(t.id);
-    };
+api.onState((state) => {
+  const ids = new Set(state.tabs.map((t) => t.id));
 
-    tab.append(title, close);
-    return tab;
-  });
-  tabsEl.replaceChildren(...els);
-  tabsEl.scrollLeft = prevScroll;
+  // closed tabs stay in place and slide out, then get removed
+  for (const [id, entry] of tabEls) {
+    if (ids.has(id)) continue;
+    tabEls.delete(id);
+    const el = entry.el;
+    el.style.maxWidth = el.getBoundingClientRect().width + 'px';
+    void el.offsetWidth; // commit the starting width so it can animate from here
+    el.classList.add('leaving');
+    el.style.maxWidth = '0px';
+    setTimeout(() => el.remove(), ANIM_MS + 40);
+  }
+
+  // new tabs slide in (but not the very first render at launch)
+  const animate = !firstRender;
+  firstRender = false;
+  for (const t of state.tabs) {
+    let entry = tabEls.get(t.id);
+    if (entry) {
+      updateTab(entry, t);
+      continue;
+    }
+    entry = makeTab(t);
+    tabEls.set(t.id, entry);
+    updateTab(entry, t);
+    if (animate) entry.el.classList.add('enter');
+    tabsEl.appendChild(entry.el);
+    if (animate) {
+      void entry.el.offsetWidth; // commit the start state
+      entry.el.classList.remove('enter');
+    }
+  }
 
   const active = state.tabs.find((t) => t.active);
   const activeId = active ? active.id : null;
   const activeChanged = activeId !== lastActiveId;
   lastActiveId = activeId;
   if (activeChanged || state.tabs.length !== lastTabCount) {
-    const el = tabsEl.querySelector('.tab.active');
-    if (el) el.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+    scrollActiveIntoView();
+    setTimeout(scrollActiveIntoView, ANIM_MS + 20); // again once the slide has finished
   }
   lastTabCount = state.tabs.length;
 
