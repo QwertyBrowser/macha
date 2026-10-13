@@ -9,6 +9,9 @@ forwardBtn.onclick = () => api.forward();
 document.getElementById('reload').onclick = () => api.reload();
 document.getElementById('newtab').onclick = () => api.newTab();
 document.getElementById('settings').onclick = () => api.openSettings();
+const downloadsBtn = document.getElementById('downloads');
+downloadsBtn.onclick = () => api.openPage('downloads');
+api.onDownloadsActive((n) => downloadsBtn.classList.toggle('active', n > 0));
 
 const starBtn = document.getElementById('star');
 starBtn.onclick = () => api.toggleBookmark();
@@ -155,6 +158,11 @@ function makeTab(t) {
     e.stopPropagation();
     api.closeTab(t.id);
   };
+
+  el.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    api.tabMenu(t.id);
+  });
 
   el.append(titleEl, close);
   return { el, titleEl, img: null, favicon: null };
@@ -310,7 +318,47 @@ api.onBookmarks((list) => {
       el.onauxclick = (e) => {
         if (e.button === 1) api.openBookmark(b.id, true);
       };
+      el.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        api.bookmarkMenu(b.id);
+      });
       return el;
     })
   );
+});
+
+/* ---------- find in page ---------- */
+
+const findInput = document.getElementById('findinput');
+const findCount = document.getElementById('findcount');
+const runFind = (forward, next) => api.find(findInput.value, forward, next);
+
+findInput.addEventListener('input', () => {
+  if (!findInput.value) findCount.textContent = '';
+  runFind(true, false);
+});
+findInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    runFind(!e.shiftKey, true);
+  } else if (e.key === 'Escape') {
+    api.closeFind();
+  }
+});
+document.getElementById('findprev').onclick = () => runFind(false, true);
+document.getElementById('findnext').onclick = () => runFind(true, true);
+document.getElementById('findclose').onclick = () => api.closeFind();
+
+api.onFindOpen(() => {
+  document.documentElement.dataset.find = 'on';
+  findInput.focus();
+  findInput.select();
+  if (findInput.value) runFind(true, false);
+});
+api.onFindClose(() => {
+  document.documentElement.dataset.find = 'off';
+  findCount.textContent = '';
+});
+api.onFindResult((r) => {
+  findCount.textContent = !findInput.value ? '' : r.total ? `${r.active} of ${r.total}` : 'No results';
 });

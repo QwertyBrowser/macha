@@ -5,6 +5,7 @@ const {
   UI_DIR,
   TOOLBAR_HEIGHT,
   BOOKMARKS_BAR_HEIGHT,
+  FIND_BAR_HEIGHT,
   ENGINES,
   INTERNAL,
   PAGES
@@ -25,7 +26,11 @@ const tabOf = (e) =>
 
 // the toolbar grows by one row while the bookmarks bar is showing
 function toolbarHeight() {
-  return TOOLBAR_HEIGHT + (state.settings.bookmarksBar ? BOOKMARKS_BAR_HEIGHT : 0);
+  return (
+    TOOLBAR_HEIGHT +
+    (state.settings.bookmarksBar ? BOOKMARKS_BAR_HEIGHT : 0) +
+    (state.findOpen ? FIND_BAR_HEIGHT : 0)
+  );
 }
 
 function layout() {
@@ -97,6 +102,12 @@ function focusAddress(opts = {}) {
 function switchTab(id) {
   const next = state.tabs.find((t) => t.id === id);
   if (!next) return;
+  if (state.findOpen && state.activeId !== id) {
+    const cur = activeTab();
+    if (cur && !cur.view.webContents.isDestroyed()) cur.view.webContents.stopFindInPage('clearSelection');
+    state.findOpen = false;
+    state.win.webContents.send('find:close');
+  }
   hideSuggestions();
   const current = activeTab();
   if (current && current !== next) state.win.contentView.removeChildView(current.view);

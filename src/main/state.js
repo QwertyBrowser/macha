@@ -14,5 +14,7 @@ module.exports = {
   activeId: null,
   nextId: 1,
   closedTabs: [], // most recently closed last
-  bookmarks: []
+  bookmarks: [],
+  downloads: [],
+  findOpen: false
 };

@@ -9,6 +9,7 @@ const TOOLBAR_HEIGHT = 80;
 const ROW_HEIGHT = 36;
 const OVERLAY_PAD = 6;
 const BOOKMARKS_BAR_HEIGHT = 32;
+const FIND_BAR_HEIGHT = 40;
 
 const ENGINES = {
   duckduckgo: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
@@ -55,7 +56,8 @@ const PAGES = {
   newtab: { html: 'newtab/newtab.html', preload: 'newtab.js' },
   settings: { html: 'settings/settings.html', preload: 'settings.js' },
   bookmarks: { html: 'bookmarks/bookmarks.html', preload: 'bookmarks.js' },
-  history: { html: 'history/history.html', preload: 'history.js' }
+  history: { html: 'history/history.html', preload: 'history.js' },
+  downloads: { html: 'downloads/downloads.html', preload: 'downloads.js' }
 };
 // typing qwerty://<kind> in the address bar opens that page
 const INTERNAL = Object.fromEntries(Object.keys(PAGES).map((kind) => ['qwerty://' + kind, kind]));
@@ -67,6 +69,7 @@ module.exports = {
   ROW_HEIGHT,
   OVERLAY_PAD,
   BOOKMARKS_BAR_HEIGHT,
+  FIND_BAR_HEIGHT,
   ENGINES,
   ENGINE_NAMES,
   SUGGEST_URLS,

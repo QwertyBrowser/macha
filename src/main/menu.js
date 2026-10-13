@@ -1,5 +1,6 @@
 const { app, Menu } = require('electron');
 const state = require('./state');
+const { openFind } = require('./find');
 const {
   activeTab,
   focusAddress,
@@ -13,6 +14,12 @@ const {
   closeTab,
   reopenClosedTab
 } = require('./tabs');
+
+function zoom(step) {
+  const wc = activeTab()?.view.webContents;
+  if (!wc) return;
+  wc.setZoomLevel(step === 0 ? 0 : Math.max(-3, Math.min(5, wc.getZoomLevel() + step)));
+}
 
 function buildMenu() {
   const template = [
@@ -57,6 +64,20 @@ function buildMenu() {
           click: () => activeTab()?.view.webContents.reloadIgnoringCache()
         },
         { type: 'separator' },
+        { label: 'Find in Page…', accelerator: 'CmdOrCtrl+F', click: openFind },
+        { label: 'Print…', accelerator: 'CmdOrCtrl+P', click: () => activeTab()?.view.webContents.print() },
+        { type: 'separator' },
+        { label: 'Zoom In', accelerator: 'CmdOrCtrl+Plus', click: () => zoom(0.5) },
+        { label: 'Zoom In (alternate)', accelerator: 'CmdOrCtrl+=', visible: false, click: () => zoom(0.5) },
+        { label: 'Zoom Out', accelerator: 'CmdOrCtrl+-', click: () => zoom(-0.5) },
+        { label: 'Actual Size', accelerator: 'CmdOrCtrl+0', click: () => zoom(0) },
+        { type: 'separator' },
+        {
+          label: 'Developer Tools',
+          accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
+          click: () => activeTab()?.view.webContents.toggleDevTools()
+        },
+        { type: 'separator' },
         { role: 'togglefullscreen' }
       ]
     },
@@ -74,7 +95,8 @@ function buildMenu() {
           click: () => activeTab()?.view.webContents.navigationHistory.goForward()
         },
         { type: 'separator' },
-        { label: 'Show All History', accelerator: 'CmdOrCtrl+Y', click: () => openPage('history') }
+        { label: 'Show All History', accelerator: 'CmdOrCtrl+Y', click: () => openPage('history') },
+        { label: 'Show Downloads', accelerator: 'CmdOrCtrl+Shift+J', click: () => openPage('downloads') }
       ]
     },
     {

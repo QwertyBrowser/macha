@@ -21,5 +21,13 @@ contextBridge.exposeInMainWorld('browserAPI', {
   onBookmarks: (cb) => ipcRenderer.on('bookmarks', (_, list) => cb(list)),
   onFocusAddress: (cb) => ipcRenderer.on('focus-address', (_, o) => cb(o || {})),
   onBlurAddress: (cb) => ipcRenderer.on('blur-address', () => cb()),
-  onSettings: (cb) => ipcRenderer.on('settings', (_, s) => cb(s))
+  onSettings: (cb) => ipcRenderer.on('settings', (_, s) => cb(s)),
+  tabMenu: (id) => ipcRenderer.send('tab:menu', id),
+  bookmarkMenu: (id) => ipcRenderer.send('bookmark:menu', id),
+  find: (text, forward, next) => ipcRenderer.send('find:query', text, forward, next),
+  closeFind: () => ipcRenderer.send('find:close'),
+  onFindOpen: (cb) => ipcRenderer.on('find:open', () => cb()),
+  onFindClose: (cb) => ipcRenderer.on('find:close', () => cb()),
+  onFindResult: (cb) => ipcRenderer.on('find:result', (_, r) => cb(r)),
+  onDownloadsActive: (cb) => ipcRenderer.on('downloads-active', (_, n) => cb(n))
 });

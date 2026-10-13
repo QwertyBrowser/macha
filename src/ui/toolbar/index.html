@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="mint-light" data-font="nunito" data-tabs="shrink" data-bar="off">
+<html data-theme="mint-light" data-font="nunito" data-tabs="shrink" data-bar="off" data-find="off">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:">
@@ -39,6 +39,14 @@
     .barhint { font-size: 12px; color: var(--muted); padding: 0 8px; }
     #allbookmarks { flex: 0 0 auto; height: 24px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; }
     #allbookmarks:hover { background: var(--hover); color: var(--text); }
+    #downloads.active { color: var(--accent); }
+    #findbar { display: none; height: 40px; align-items: center; gap: 6px; padding: 0 8px; background: var(--tab-active); border-top: 1px solid var(--hover); }
+    html[data-find="on"] #findbar { display: flex; }
+    #findinput { width: 240px; height: 28px; border: 0; border-radius: 14px; padding: 0 14px; background: var(--input); color: var(--text); font-size: 13px; outline: none; user-select: text; }
+    #findinput:focus { box-shadow: 0 0 0 2px var(--accent); }
+    #findcount { min-width: 64px; font-size: 12px; color: var(--muted); }
+    #findbar button { width: 28px; height: 28px; border: 0; border-radius: 14px; background: transparent; color: var(--text); font-size: 16px; cursor: pointer; }
+    #findbar button:hover { background: var(--hover); }
   </style>
 </head>
 <body>
@@ -52,11 +60,19 @@
     <button id="reload" title="Reload">⟳</button>
     <input id="address" type="text" placeholder="Search or enter address" spellcheck="false" autocomplete="off">
     <button id="star" title="Bookmark this page" disabled>☆</button>
+    <button id="downloads" title="Downloads">↓</button>
     <button id="settings" title="Settings">⚙</button>
   </div>
   <div id="bookmarkbar">
     <div id="baritems"></div>
     <button id="allbookmarks">All bookmarks</button>
+  </div>
+  <div id="findbar">
+    <input id="findinput" type="text" placeholder="Find in page" spellcheck="false" autocomplete="off">
+    <span id="findcount"></span>
+    <button id="findprev" title="Previous match">↑</button>
+    <button id="findnext" title="Next match">↓</button>
+    <button id="findclose" title="Close">×</button>
   </div>
   <script src="renderer.js"></script>
 </body>
