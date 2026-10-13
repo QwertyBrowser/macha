@@ -26,13 +26,16 @@ const SUGGEST_URLS = {
   ecosia: (q) => `https://ac.ecosia.org/autocomplete?type=list&q=${q}`
 };
 
-const THEMES = ['dark', 'light', 'midnight', 'forest'];
+const THEME_COLORS = ['red', 'blue', 'green', 'yellow', 'violet', 'orange', 'pink', 'indigo'];
+const THEMES = [...THEME_COLORS.flatMap((c) => [`${c}-dark`, `${c}-light`]), 'black', 'white'];
+// themes saved by older versions map onto the closest new one
+const LEGACY_THEMES = { dark: 'blue-dark', light: 'blue-light', midnight: 'indigo-dark', forest: 'green-dark' };
 
 const DEFAULTS = {
   searchEngine: 'duckduckgo',
   homepage: 'https://duckduckgo.com/',
-  theme: 'dark',
-  accent: '#4f8cff',
+  theme: 'blue-dark',
+  accentOverride: null, // null = use the theme's own accent color
   tabOverflow: 'shrink',
   newTabMode: 'newtab',
   onlineSuggestions: true,
@@ -51,6 +54,7 @@ module.exports = {
   ENGINE_NAMES,
   SUGGEST_URLS,
   THEMES,
+  LEGACY_THEMES,
   DEFAULTS,
   INTERNAL
 };

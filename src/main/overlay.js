@@ -11,7 +11,7 @@ function showSuggestions(items, rect) {
     items,
     selected: 0,
     theme: state.settings.theme,
-    accent: state.settings.accent
+    accentOverride: state.settings.accentOverride
   });
   state.suggestVisible = true;
 }

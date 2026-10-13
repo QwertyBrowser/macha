@@ -30,9 +30,8 @@ function highlight(i) {
   [...list.children].forEach((row, n) => row.classList.toggle('sel', n === i));
 }
 
-suggestAPI.onItems(({ items, selected, theme, accent }) => {
-  document.documentElement.dataset.theme = theme;
-  document.documentElement.style.setProperty('--accent', accent);
+suggestAPI.onItems(({ items, selected, theme, accentOverride }) => {
+  applyTheme(theme, accentOverride);
   render(items, selected);
 });
 suggestAPI.onHighlight(highlight);

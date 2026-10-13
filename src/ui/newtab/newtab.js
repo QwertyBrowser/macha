@@ -3,8 +3,7 @@ const input = document.getElementById('q');
 let engines = {};
 
 function apply(s) {
-  document.documentElement.dataset.theme = s.theme;
-  document.documentElement.style.setProperty('--accent', s.accent);
+  applyTheme(s.theme, s.accentOverride);
   input.placeholder = 'Search with ' + (engines[s.searchEngine] || 'your search engine');
 }
 

@@ -1,7 +1,7 @@
 const { app } = require('electron');
 const fs = require('fs');
 const path = require('path');
-const { ENGINES, THEMES, DEFAULTS } = require('./constants');
+const { ENGINES, THEMES, LEGACY_THEMES, DEFAULTS } = require('./constants');
 const state = require('./state');
 
 const settingsPath = () => path.join(app.getPath('userData'), 'settings.json');
@@ -20,8 +20,12 @@ function normalizeHomepage(text) {
 function sanitize(input, base) {
   const out = { ...base };
   if (ENGINES[input.searchEngine]) out.searchEngine = input.searchEngine;
-  if (THEMES.includes(input.theme)) out.theme = input.theme;
-  if (typeof input.accent === 'string' && /^#[0-9a-f]{6}$/i.test(input.accent)) out.accent = input.accent;
+  const theme = LEGACY_THEMES[input.theme] || input.theme;
+  if (THEMES.includes(theme)) out.theme = theme;
+  if (input.accentOverride === null) out.accentOverride = null;
+  else if (typeof input.accentOverride === 'string' && /^#[0-9a-f]{6}$/i.test(input.accentOverride)) {
+    out.accentOverride = input.accentOverride;
+  }
   if (['shrink', 'scroll'].includes(input.tabOverflow)) out.tabOverflow = input.tabOverflow;
   if (['newtab', 'homepage'].includes(input.newTabMode)) out.newTabMode = input.newTabMode;
   if (['replace', 'closeWindow'].includes(input.lastTabClose)) out.lastTabClose = input.lastTabClose;

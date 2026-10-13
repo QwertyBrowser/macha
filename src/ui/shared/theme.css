@@ -1,18 +1,48 @@
-:root { --accent: #4f8cff; }
+/* One palette per theme. Each color is a hue (--h) plus accent lightness for its
+   dark (--ad) and light (--al) versions; surfaces and text are built from the hue.
+   Black and white are hand-picked. */
 
-html[data-theme="dark"] {
-  --bg: #1e1f24; --tab: #2a2c33; --tab-active: #3a3d46; --input: #1e1f24;
-  --text: #eeeeee; --muted: #aaaaaa; --hover: #4a4e59; color-scheme: dark;
+[data-theme^="red-"]    { --h: 355; --ad: 62%; --al: 45%; }
+[data-theme^="blue-"]   { --h: 215; --ad: 64%; --al: 46%; }
+[data-theme^="green-"]  { --h: 140; --ad: 48%; --al: 32%; }
+[data-theme^="yellow-"] { --h: 46;  --ad: 54%; --al: 36%; }
+[data-theme^="violet-"] { --h: 272; --ad: 70%; --al: 52%; }
+[data-theme^="orange-"] { --h: 25;  --ad: 55%; --al: 42%; }
+[data-theme^="pink-"]   { --h: 330; --ad: 66%; --al: 50%; }
+[data-theme^="indigo-"] { --h: 243; --ad: 72%; --al: 54%; }
+
+[data-theme$="-dark"] {
+  --bg: hsl(var(--h) 18% 12%);
+  --tab: hsl(var(--h) 16% 17%);
+  --tab-active: hsl(var(--h) 14% 23%);
+  --input: hsl(var(--h) 18% 12%);
+  --hover: hsl(var(--h) 14% 31%);
+  --text: hsl(var(--h) 20% 94%);
+  --muted: hsl(var(--h) 10% 68%);
+  --accent: hsl(var(--h) 90% var(--ad));
+  color-scheme: dark;
 }
-html[data-theme="light"] {
-  --bg: #dfe2e8; --tab: #cdd1d9; --tab-active: #ffffff; --input: #eef0f3;
-  --text: #1f2328; --muted: #666a73; --hover: #e3e6eb; color-scheme: light;
+
+[data-theme$="-light"] {
+  --bg: hsl(var(--h) 22% 86%);
+  --tab: hsl(var(--h) 20% 80%);
+  --tab-active: hsl(var(--h) 30% 98%);
+  --input: hsl(var(--h) 25% 94%);
+  --hover: hsl(var(--h) 24% 90%);
+  --text: hsl(var(--h) 30% 14%);
+  --muted: hsl(var(--h) 10% 40%);
+  --accent: hsl(var(--h) 85% var(--al));
+  color-scheme: light;
 }
-html[data-theme="midnight"] {
-  --bg: #0b1020; --tab: #121a33; --tab-active: #1b2547; --input: #0b1020;
-  --text: #e6ecff; --muted: #8a96c0; --hover: #26335e; color-scheme: dark;
+
+[data-theme="black"] {
+  --bg: #000000; --tab: #0e0e0e; --tab-active: #1a1a1a; --input: #000000;
+  --text: #f2f2f2; --muted: #9a9a9a; --hover: #2c2c2c; --accent: #e8e8e8;
+  color-scheme: dark;
 }
-html[data-theme="forest"] {
-  --bg: #0f1a14; --tab: #16251c; --tab-active: #1f3528; --input: #0f1a14;
-  --text: #e6f2ea; --muted: #8fb09c; --hover: #2c4a37; color-scheme: dark;
+
+[data-theme="white"] {
+  --bg: #e6e6e6; --tab: #d4d4d4; --tab-active: #ffffff; --input: #f2f2f2;
+  --text: #111111; --muted: #666666; --hover: #ececec; --accent: #1a1a1a;
+  color-scheme: light;
 }
