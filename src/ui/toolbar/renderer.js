@@ -10,6 +10,10 @@ document.getElementById('reload').onclick = () => api.reload();
 document.getElementById('newtab').onclick = () => api.newTab();
 document.getElementById('settings').onclick = () => api.openSettings();
 
+const starBtn = document.getElementById('star');
+starBtn.onclick = () => api.toggleBookmark();
+document.getElementById('allbookmarks').onclick = () => api.openPage('bookmarks');
+
 /* ---------- suggestions ---------- */
 
 let seq = 0;
@@ -236,6 +240,10 @@ api.onState((state) => {
 
   backBtn.disabled = !state.canGoBack;
   forwardBtn.disabled = !state.canGoForward;
+  starBtn.disabled = !state.canBookmark;
+  starBtn.textContent = state.bookmarked ? '★' : '☆';
+  starBtn.classList.toggle('on', !!state.bookmarked);
+  starBtn.title = state.bookmarked ? 'Remove bookmark' : 'Bookmark this page';
 
   currentURL = state.url || '';
   const editing = document.activeElement === address && document.hasFocus();
@@ -256,4 +264,53 @@ api.onBlurAddress(() => address.blur());
 api.onSettings((s) => {
   applyTheme(s);
   document.documentElement.dataset.tabs = s.tabOverflow;
+  document.documentElement.dataset.bar = s.bookmarksBar ? 'on' : 'off';
+});
+
+/* ---------- bookmarks bar ---------- */
+
+const barItems = document.getElementById('baritems');
+
+barItems.addEventListener(
+  'wheel',
+  (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      barItems.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }
+  },
+  { passive: false }
+);
+
+api.onBookmarks((list) => {
+  if (!list.length) {
+    const hint = document.createElement('span');
+    hint.className = 'barhint';
+    hint.textContent = 'Press ⌘D to bookmark a page';
+    barItems.replaceChildren(hint);
+    return;
+  }
+  barItems.replaceChildren(
+    ...list.map((b) => {
+      const el = document.createElement('button');
+      el.className = 'bm';
+      el.title = b.title + '\n' + b.url;
+      if (b.favicon) {
+        const img = new Image();
+        img.className = 'fav';
+        img.draggable = false;
+        img.onerror = () => img.remove();
+        img.src = b.favicon;
+        el.appendChild(img);
+      }
+      const label = document.createElement('span');
+      label.textContent = b.title;
+      el.appendChild(label);
+      el.onclick = (e) => api.openBookmark(b.id, e.metaKey || e.ctrlKey);
+      el.onauxclick = (e) => {
+        if (e.button === 1) api.openBookmark(b.id, true);
+      };
+      return el;
+    })
+  );
 });

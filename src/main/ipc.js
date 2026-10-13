@@ -3,10 +3,21 @@ const { ENGINE_NAMES, THEMES, FONTS } = require('./constants');
 const state = require('./state');
 const { sanitize, saveSettings, sendSettings, resetSettings } = require('./settings-store');
 const { clearStore, recordSearch } = require('./history');
+const { clearAll: clearBookmarks } = require('./bookmarks');
 const { searchURL, looksLikeURL, resolveInput } = require('./input');
 const { localSuggestions, onlineSuggestions, withOnline } = require('./predictions');
 const { hideSuggestions, publishSuggestions } = require('./overlay');
-const { activeTab, tabOf, navigateTab, createTab, closeTab, switchTab, openSettings } = require('./tabs');
+const {
+  activeTab,
+  tabOf,
+  navigateTab,
+  createTab,
+  closeTab,
+  switchTab,
+  openSettings,
+  layout,
+  sendState
+} = require('./tabs');
 
 function chooseSuggestion(index) {
   const item = state.currentItems[index];
@@ -37,6 +48,7 @@ function registerIpc() {
     state.settings = sanitize(patch, state.settings);
     saveSettings();
     sendSettings();
+    layout(); // the bookmarks bar may have appeared or disappeared
     return state.settings;
   });
 
@@ -46,12 +58,15 @@ function registerIpc() {
     resetSettings();
     clearStore();
     state.closedTabs = [];
+    clearBookmarks();
+    layout();
+    sendState();
     return state.settings;
   });
 
   ipcMain.handle('history:clear', (e) => {
     const t = tabOf(e);
-    if (!t || t.kind !== 'settings') return false;
+    if (!t || !['settings', 'history'].includes(t.kind)) return false;
     clearStore();
     return true;
   });

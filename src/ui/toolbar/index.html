@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="mint-light" data-font="nunito" data-tabs="shrink">
+<html data-theme="mint-light" data-font="nunito" data-tabs="shrink" data-bar="off">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:">
@@ -28,6 +28,17 @@
     #toolbar button:disabled { opacity: 0.3; cursor: default; }
     #address { flex: 1; height: 30px; border: 0; border-radius: 15px; padding: 0 14px; background: var(--input); color: var(--text); font-size: 13px; outline: none; user-select: text; }
     #address:focus { box-shadow: 0 0 0 2px var(--accent); }
+    #star.on { color: var(--accent); }
+    #bookmarkbar { display: none; height: 32px; align-items: center; gap: 4px; padding: 0 8px; background: var(--tab-active); border-top: 1px solid var(--hover); }
+    html[data-bar="on"] #bookmarkbar { display: flex; }
+    #baritems { flex: 1; min-width: 0; display: flex; gap: 2px; overflow-x: auto; overflow-y: hidden; }
+    #baritems::-webkit-scrollbar { display: none; }
+    .bm { flex: 0 0 auto; max-width: 180px; height: 24px; display: flex; align-items: center; gap: 6px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; color: var(--text); font-size: 12px; cursor: pointer; }
+    .bm:hover { background: var(--hover); }
+    .bm span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .barhint { font-size: 12px; color: var(--muted); padding: 0 8px; }
+    #allbookmarks { flex: 0 0 auto; height: 24px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; }
+    #allbookmarks:hover { background: var(--hover); color: var(--text); }
   </style>
 </head>
 <body>
@@ -40,7 +51,12 @@
     <button id="forward" title="Forward">›</button>
     <button id="reload" title="Reload">⟳</button>
     <input id="address" type="text" placeholder="Search or enter address" spellcheck="false" autocomplete="off">
+    <button id="star" title="Bookmark this page" disabled>☆</button>
     <button id="settings" title="Settings">⚙</button>
+  </div>
+  <div id="bookmarkbar">
+    <div id="baritems"></div>
+    <button id="allbookmarks">All bookmarks</button>
   </div>
   <script src="renderer.js"></script>
 </body>

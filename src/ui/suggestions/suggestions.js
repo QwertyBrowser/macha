@@ -1,5 +1,5 @@
 const list = document.getElementById('list');
-const ICONS = { go: '↗', site: '🌐', recent: '🕘', search: '🔍' };
+const ICONS = { go: '↗', site: '🌐', star: '★', recent: '🕘', search: '🔍' };
 
 function render(items, selected) {
   list.replaceChildren(

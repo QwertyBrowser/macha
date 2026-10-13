@@ -102,4 +102,29 @@ function recordSearch(text) {
   scheduleSave();
 }
 
-module.exports = { loadStore, flushStore, clearStore, recordVisit, setTitle, recordSearch };
+// for the History page: each site once, newest first, optionally filtered
+function listSites(query, limit = 500) {
+  const q = typeof query === 'string' ? query.trim().toLowerCase() : '';
+  let sites = Object.values(state.store.sites);
+  if (q) sites = sites.filter((s) => s.url.toLowerCase().includes(q) || (s.title || '').toLowerCase().includes(q));
+  sites.sort((a, b) => b.last - a.last);
+  return sites.slice(0, limit).map(({ url, title, last, visits }) => ({ url, title, last, visits }));
+}
+
+function removeSite(url) {
+  if (typeof url !== 'string' || !Object.hasOwn(state.store.sites, url)) return false;
+  delete state.store.sites[url];
+  scheduleSave();
+  return true;
+}
+
+module.exports = {
+  loadStore,
+  flushStore,
+  clearStore,
+  recordVisit,
+  setTitle,
+  recordSearch,
+  listSites,
+  removeSite
+};

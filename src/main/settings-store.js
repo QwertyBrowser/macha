@@ -33,6 +33,7 @@ function sanitize(input, base) {
   if (['newtab', 'homepage'].includes(input.newTabMode)) out.newTabMode = input.newTabMode;
   if (['replace', 'closeWindow'].includes(input.lastTabClose)) out.lastTabClose = input.lastTabClose;
   if (typeof input.onlineSuggestions === 'boolean') out.onlineSuggestions = input.onlineSuggestions;
+  if (typeof input.bookmarksBar === 'boolean') out.bookmarksBar = input.bookmarksBar;
   if (typeof input.setupComplete === 'boolean') out.setupComplete = input.setupComplete;
   if (typeof input.homepage === 'string') {
     const home = normalizeHomepage(input.homepage);

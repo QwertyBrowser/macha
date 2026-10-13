@@ -13,5 +13,6 @@ module.exports = {
   tabs: [],
   activeId: null,
   nextId: 1,
-  closedTabs: [] // most recently closed last
+  closedTabs: [], // most recently closed last
+  bookmarks: []
 };

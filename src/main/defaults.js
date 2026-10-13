@@ -12,25 +12,28 @@ module.exports = {
   theme: 'mint-light',
 
   // '#rrggbb' to force one accent color on every theme, or null to use each theme's own
-  accentOverride: null,
+  accentOverride: '#8585ff',
 
   // 'nunito' | 'inter' | 'dm-sans' | 'system'
-  font: 'nunito',
+  font: 'dm-sans',
 
   // 'duckduckgo' | 'google' | 'bing' | 'brave' | 'ecosia'
-  searchEngine: 'duckduckgo',
+  searchEngine: 'google',
 
-  homepage: 'https://duckduckgo.com/',
+  homepage: 'https://google.com/',
 
   // 'newtab' (Macha's own page) | 'homepage'
   newTabMode: 'newtab',
 
   // 'shrink' (tabs get smaller, then scroll) | 'scroll' (tabs keep full size)
-  tabOverflow: 'shrink',
+  tabOverflow: 'scroll',
 
   // 'replace' (a fresh tab appears) | 'closeWindow'
-  lastTabClose: 'replace',
+  lastTabClose: 'closeWindow',
 
   // address bar predictions from your search engine (true / false)
-  onlineSuggestions: true
+  onlineSuggestions: true,
+
+  // show the bookmarks bar under the address bar (true / false); toggle anytime with Cmd+Shift+B
+  bookmarksBar: true
 };

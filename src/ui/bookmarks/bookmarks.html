@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html data-theme="mint-light" data-font="nunito">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:">
+  <title>Bookmarks</title>
+  <link rel="stylesheet" href="../shared/theme.css">
+  <script src="../shared/theme.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 40px 20px; font-family: var(--font); background: var(--tab-active); color: var(--text); }
+    main { max-width: 720px; margin: 0 auto; }
+    h1 { margin: 0 0 20px; }
+    #q { width: 100%; height: 40px; border: 1px solid var(--hover); border-radius: 20px; padding: 0 18px; margin-bottom: 20px; background: var(--input); color: var(--text); font-size: 14px; outline: none; }
+    #q:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+    .row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px; cursor: pointer; }
+    .row:hover { background: var(--hover); }
+    .fav { width: 18px; height: 18px; flex: 0 0 18px; border-radius: 4px; }
+    .globe { width: 18px; flex: 0 0 18px; text-align: center; font-size: 14px; }
+    .text { flex: 1; min-width: 0; }
+    .title { font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .url { font-size: 12px; color: var(--muted); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .actions { display: flex; gap: 4px; opacity: 0; }
+    .row:hover .actions, .row:focus-within .actions { opacity: 1; }
+    .icon-btn { width: 28px; height: 28px; border: 0; border-radius: 14px; background: transparent; color: var(--muted); cursor: pointer; font-size: 14px; }
+    .icon-btn:hover { background: var(--input); color: var(--text); }
+    .edit { width: 100%; height: 28px; border: 1px solid var(--accent); border-radius: 6px; padding: 0 8px; background: var(--input); color: var(--text); font-size: 14px; outline: none; }
+    #empty { color: var(--muted); padding: 24px 10px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Bookmarks</h1>
+    <input id="q" type="text" placeholder="Search bookmarks" spellcheck="false" autocomplete="off">
+    <div id="list"></div>
+    <div id="empty" hidden></div>
+  </main>
+  <script src="bookmarks.js"></script>
+</body>
+</html>

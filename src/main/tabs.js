@@ -1,8 +1,19 @@
 const path = require('path');
-const { PRELOAD_DIR, UI_DIR, TOOLBAR_HEIGHT, ENGINES, INTERNAL } = require('./constants');
+const { WebContentsView } = require('electron');
+const {
+  PRELOAD_DIR,
+  UI_DIR,
+  TOOLBAR_HEIGHT,
+  BOOKMARKS_BAR_HEIGHT,
+  ENGINES,
+  INTERNAL,
+  PAGES
+} = require('./constants');
 const state = require('./state');
 const { recordVisit, setTitle } = require('./history');
 const { hideSuggestions } = require('./overlay');
+const { saveSettings, sendSettings } = require('./settings-store');
+const bookmarks = require('./bookmarks');
 
 function activeTab() {
   return state.tabs.find((t) => t.id === state.activeId);
@@ -12,12 +23,18 @@ function activeTab() {
 const tabOf = (e) =>
   state.tabs.find((t) => t.view && !t.view.webContents.isDestroyed() && t.view.webContents === e.sender);
 
+// the toolbar grows by one row while the bookmarks bar is showing
+function toolbarHeight() {
+  return TOOLBAR_HEIGHT + (state.settings.bookmarksBar ? BOOKMARKS_BAR_HEIGHT : 0);
+}
+
 function layout() {
   const tab = activeTab();
   const win = state.win;
   if (!win || win.isDestroyed() || !tab) return;
   const [width, height] = win.getContentSize();
-  tab.view.setBounds({ x: 0, y: TOOLBAR_HEIGHT, width, height: height - TOOLBAR_HEIGHT });
+  const top = toolbarHeight();
+  tab.view.setBounds({ x: 0, y: top, width, height: height - top });
 }
 
 // if the page is a results page from one of our search engines, return just the query
@@ -37,7 +54,7 @@ function searchQueryFromURL(raw) {
 
 function pageURL(tab) {
   if (tab.kind === 'newtab') return '';
-  if (tab.kind === 'settings') return 'qwerty://settings';
+  if (tab.kind !== 'web') return 'qwerty://' + tab.kind;
   const url = tab.view.webContents.getURL();
   return searchQueryFromURL(url) ?? url;
 }
@@ -53,6 +70,8 @@ function sendState() {
   if (!win || win.isDestroyed()) return;
   const active = activeTab();
   const nav = active ? active.view.webContents.navigationHistory : null;
+  const realURL = active && active.kind === 'web' ? active.view.webContents.getURL() : '';
+  const canBookmark = /^https?:/i.test(realURL);
   win.webContents.send('state', {
     tabs: state.tabs.map((t) => ({
       id: t.id,
@@ -62,7 +81,9 @@ function sendState() {
     })),
     url: active ? pageURL(active) : '',
     canGoBack: nav ? nav.canGoBack() : false,
-    canGoForward: nav ? nav.canGoForward() : false
+    canGoForward: nav ? nav.canGoForward() : false,
+    canBookmark,
+    bookmarked: canBookmark && !!bookmarks.findByURL(realURL)
   });
 }
 
@@ -93,12 +114,12 @@ function nextTab(delta) {
 }
 
 function buildView(tab, kind, url) {
-  const preload = { settings: 'settings.js', newtab: 'newtab.js' }[kind];
-  const view = new (require('electron').WebContentsView)({
+  const page = PAGES[kind]; // undefined for ordinary web pages
+  const view = new WebContentsView({
     webPreferences: {
       sandbox: true,
       contextIsolation: true,
-      ...(preload ? { preload: path.join(PRELOAD_DIR, preload) } : {})
+      ...(page ? { preload: path.join(PRELOAD_DIR, page.preload) } : {})
     }
   });
   const wc = view.webContents;
@@ -144,7 +165,7 @@ function buildView(tab, kind, url) {
   } else {
     // internal pages have special powers, so they must never navigate to the web
     wc.on('will-navigate', (e) => e.preventDefault());
-    wc.loadFile(path.join(UI_DIR, kind === 'settings' ? 'settings/settings.html' : 'newtab/newtab.html'));
+    wc.loadFile(path.join(UI_DIR, page.html));
   }
 }
 
@@ -198,20 +219,42 @@ function createTab(opts = {}) {
   return tab;
 }
 
-function openSettings() {
-  if (!state.win) return;
-  const existing = state.tabs.find((t) => t.kind === 'settings');
+// open (or jump to) an internal page: settings, bookmarks or history
+function openPage(kind) {
+  if (!state.win || !Object.hasOwn(PAGES, kind) || kind === 'newtab') return;
+  const existing = state.tabs.find((t) => t.kind === kind);
   if (existing) switchTab(existing.id);
-  else createTab({ kind: 'settings' });
+  else createTab({ kind });
+}
+
+const openSettings = () => openPage('settings');
+
+// bookmark (or un-bookmark) the page in the active tab
+function toggleBookmark() {
+  const tab = activeTab();
+  if (!tab || tab.kind !== 'web') return;
+  const wc = tab.view.webContents;
+  const url = wc.getURL();
+  if (!/^https?:/i.test(url)) return;
+  if (bookmarks.findByURL(url)) bookmarks.removeByURL(url);
+  else bookmarks.add({ url, title: wc.getTitle(), favicon: tab.favicon });
+  sendState();
+}
+
+function toggleBookmarksBar() {
+  state.settings = { ...state.settings, bookmarksBar: !state.settings.bookmarksBar };
+  saveSettings();
+  sendSettings();
+  layout();
 }
 
 function rememberClosed(tab) {
   if (tab.view.webContents.isDestroyed()) return;
-  if (tab.kind === 'settings') {
-    state.closedTabs.push({ kind: 'settings' });
-  } else if (tab.kind === 'web') {
+  if (tab.kind === 'web') {
     const url = tab.view.webContents.getURL();
     if (/^https?:/i.test(url)) state.closedTabs.push({ kind: 'web', url });
+  } else if (tab.kind !== 'newtab') {
+    state.closedTabs.push({ kind: tab.kind });
   }
   if (state.closedTabs.length > 25) state.closedTabs.shift();
 }
@@ -220,12 +263,12 @@ function reopenClosedTab() {
   if (!state.win) return;
   let entry;
   while ((entry = state.closedTabs.pop())) {
-    // skip a stale Settings entry if Settings is already open
-    if (entry.kind === 'settings' && state.tabs.some((t) => t.kind === 'settings')) continue;
+    // skip a stale internal-page entry if that page is already open
+    if (entry.kind !== 'web' && state.tabs.some((t) => t.kind === entry.kind)) continue;
     break;
   }
   if (!entry) return;
-  if (entry.kind === 'settings') return openSettings();
+  if (entry.kind !== 'web') return openPage(entry.kind);
   const only = state.tabs.length === 1 ? state.tabs[0] : null;
   if (only && only.kind === 'newtab') navigateTab(only, entry.url); // reuse the blank tab
   else createTab({ url: entry.url });
@@ -258,7 +301,10 @@ module.exports = {
   nextTab,
   navigateTab,
   createTab,
+  openPage,
   openSettings,
+  toggleBookmark,
+  toggleBookmarksBar,
   closeTab,
   reopenClosedTab
 };

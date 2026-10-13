@@ -8,6 +8,7 @@ const tabsSel = $('taboverflow');
 const lastTab = $('lasttab');
 const fontSel = $('font');
 const resetBtn = $('reset');
+const barCheck = $('bookmarksbar');
 const accent = $('accent');
 const accentReset = $('accent-reset');
 const accentHint = $('accent-hint');
@@ -46,6 +47,7 @@ function apply(s) {
   tabsSel.value = s.tabOverflow;
   lastTab.value = s.lastTabClose;
   fontSel.value = s.font;
+  barCheck.checked = s.bookmarksBar;
   themesEl.querySelectorAll('.swatch').forEach((b) => b.classList.toggle('active', b.dataset.id === s.theme));
   accent.value = s.accentOverride || toHex(getComputedStyle(document.documentElement).getPropertyValue('--accent'));
   accentReset.disabled = !s.accentOverride;
@@ -88,6 +90,7 @@ home.onchange = () => save({ homepage: home.value });
 tabsSel.onchange = () => save({ tabOverflow: tabsSel.value });
 lastTab.onchange = () => save({ lastTabClose: lastTab.value });
 fontSel.onchange = () => save({ font: fontSel.value });
+barCheck.onchange = () => save({ bookmarksBar: barCheck.checked });
 
 let resetArmed = false;
 let resetTimer = null;

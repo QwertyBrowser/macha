@@ -3,6 +3,7 @@ const path = require('path');
 const { PRELOAD_DIR, UI_DIR } = require('./constants');
 const state = require('./state');
 const { sendSettings } = require('./settings-store');
+const { broadcast: broadcastBookmarks } = require('./bookmarks');
 const { hideSuggestions } = require('./overlay');
 const { createTab, sendState, layout } = require('./tabs');
 
@@ -30,6 +31,7 @@ function createWindow() {
   win.loadFile(path.join(UI_DIR, 'toolbar', 'index.html'));
   win.webContents.on('did-finish-load', () => {
     sendSettings();
+    broadcastBookmarks();
     if (state.tabs.length === 0) createTab();
     else sendState();
   });

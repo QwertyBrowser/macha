@@ -11,33 +11,45 @@ function frecency(count, last) {
   return (1 + Math.log2(1 + count)) * (0.4 + 0.6 * Math.pow(0.5, days / 14));
 }
 
+// how well an address/title matches what was typed (0 = no match)
+function matchScore(url, title, q) {
+  const u = bare(url).toLowerCase();
+  const t = (title || '').toLowerCase();
+  if (u.split('/')[0].startsWith(q)) return 100;
+  if (u.startsWith(q)) return 90;
+  if (t.split(/\s+/).some((w) => w.startsWith(q))) return 60;
+  if (u.includes(q) || t.includes(q)) return 40;
+  return 0;
+}
+
 function localSuggestions(text) {
-  const store = state.store;
   const raw = text.trim();
   const q = raw.toLowerCase();
   const items = [defaultAction(raw)];
   const defaultTarget = items[0].value.replace(/\/$/, '');
+  const skip = (url) => url.replace(/\/$/, '') === defaultTarget;
 
   const sites = [];
-  for (const s of Object.values(store.sites)) {
-    if (s.url.replace(/\/$/, '') === defaultTarget) continue;
-    const u = bare(s.url).toLowerCase();
-    const title = (s.title || '').toLowerCase();
-    let match = 0;
-    if (u.split('/')[0].startsWith(q)) match = 100;
-    else if (u.startsWith(q)) match = 90;
-    else if (title.split(/\s+/).some((w) => w.startsWith(q))) match = 60;
-    else if (u.includes(q) || title.includes(q)) match = 40;
-    if (match) sites.push({ s, score: match * frecency(s.visits, s.last) });
+  const bookmarked = new Set();
+  for (const b of state.bookmarks) {
+    bookmarked.add(b.url);
+    if (skip(b.url)) continue;
+    const match = matchScore(b.url, b.title, q);
+    if (match) sites.push({ url: b.url, title: b.title, icon: 'star', score: match * 5 });
+  }
+  for (const s of Object.values(state.store.sites)) {
+    if (bookmarked.has(s.url) || skip(s.url)) continue;
+    const match = matchScore(s.url, s.title, q);
+    if (match) sites.push({ url: s.url, title: s.title, icon: 'site', score: match * frecency(s.visits, s.last) });
   }
   sites.sort((a, b) => b.score - a.score);
-  for (const { s } of sites.slice(0, 3)) {
+  for (const s of sites.slice(0, 3)) {
     const label = s.title || bare(s.url);
-    items.push({ kind: 'url', icon: 'site', label, sub: label === bare(s.url) ? '' : bare(s.url), value: s.url });
+    items.push({ kind: 'url', icon: s.icon, label, sub: label === bare(s.url) ? '' : bare(s.url), value: s.url });
   }
 
   const recents = [];
-  for (const s of Object.values(store.searches)) {
+  for (const s of Object.values(state.store.searches)) {
     const t = s.q.toLowerCase();
     if (t === q) continue;
     const match = t.startsWith(q) ? 80 : t.includes(q) ? 35 : 0;

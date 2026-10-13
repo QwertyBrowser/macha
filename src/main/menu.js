@@ -6,7 +6,10 @@ const {
   switchTab,
   nextTab,
   createTab,
+  openPage,
   openSettings,
+  toggleBookmark,
+  toggleBookmarksBar,
   closeTab,
   reopenClosedTab
 } = require('./tabs');
@@ -69,7 +72,18 @@ function buildMenu() {
           label: 'Forward',
           accelerator: 'CmdOrCtrl+]',
           click: () => activeTab()?.view.webContents.navigationHistory.goForward()
-        }
+        },
+        { type: 'separator' },
+        { label: 'Show All History', accelerator: 'CmdOrCtrl+Y', click: () => openPage('history') }
+      ]
+    },
+    {
+      label: 'Bookmarks',
+      submenu: [
+        { label: 'Bookmark This Page', accelerator: 'CmdOrCtrl+D', click: toggleBookmark },
+        { label: 'Show/Hide Bookmarks Bar', accelerator: 'CmdOrCtrl+Shift+B', click: toggleBookmarksBar },
+        { type: 'separator' },
+        { label: 'Show All Bookmarks', accelerator: 'CmdOrCtrl+Alt+B', click: () => openPage('bookmarks') }
       ]
     },
     {

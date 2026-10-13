@@ -8,6 +8,7 @@ const UI_DIR = path.join(SRC, 'ui');
 const TOOLBAR_HEIGHT = 80;
 const ROW_HEIGHT = 36;
 const OVERLAY_PAD = 6;
+const BOOKMARKS_BAR_HEIGHT = 32;
 
 const ENGINES = {
   duckduckgo: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
@@ -45,10 +46,19 @@ const FALLBACK = {
   newTabMode: 'newtab',
   onlineSuggestions: true,
   lastTabClose: 'replace',
+  bookmarksBar: false,
   setupComplete: false
 };
 
-const INTERNAL = { 'qwerty://newtab': 'newtab', 'qwerty://settings': 'settings' };
+// internal pages: kind -> page file (under src/ui) and preload script (under src/preload)
+const PAGES = {
+  newtab: { html: 'newtab/newtab.html', preload: 'newtab.js' },
+  settings: { html: 'settings/settings.html', preload: 'settings.js' },
+  bookmarks: { html: 'bookmarks/bookmarks.html', preload: 'bookmarks.js' },
+  history: { html: 'history/history.html', preload: 'history.js' }
+};
+// typing qwerty://<kind> in the address bar opens that page
+const INTERNAL = Object.fromEntries(Object.keys(PAGES).map((kind) => ['qwerty://' + kind, kind]));
 
 module.exports = {
   PRELOAD_DIR,
@@ -56,6 +66,7 @@ module.exports = {
   TOOLBAR_HEIGHT,
   ROW_HEIGHT,
   OVERLAY_PAD,
+  BOOKMARKS_BAR_HEIGHT,
   ENGINES,
   ENGINE_NAMES,
   SUGGEST_URLS,
@@ -63,5 +74,6 @@ module.exports = {
   LEGACY_THEMES,
   FONTS,
   FALLBACK,
-  INTERNAL
+  INTERNAL,
+  PAGES
 };
