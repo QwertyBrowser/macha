@@ -7,7 +7,7 @@
 // ─────────────────────────────────────────────────────────────────────
 module.exports = {
   // <color>-dark or <color>-light, where color is one of:
-  //   red, blue, green, mint, yellow, violet, orange, pink, indigo
+  // red, blue, green, mint, yellow, violet, orange, pink, indigo
   // or just: black, white
   theme: 'mint-light',
 
