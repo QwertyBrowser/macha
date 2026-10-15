@@ -5,7 +5,9 @@
   "main": "src/main/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --mac dmg",
+    "dist:pkg": "electron-builder --mac pkg"
   },
   "repository": {
     "type": "git",
@@ -18,9 +20,21 @@
   "bugs": {
     "url": "https://github.com/QwertyBrowser/macha/issues"
   },
+  "build": {
+    "appId": "com.qwertybrowser.macha",
+    "productName": "Macha",
+    "mac": {
+      "icon": "build/icon.icns",
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity"
+    }
+  },
   "homepage": "https://github.com/QwertyBrowser/macha#readme",
   "devDependencies": {
-    "electron": "^44.7.0"
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
   },
   "productName": "Macha"
 }
